@@ -2,16 +2,17 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { supabaseAdmin } from "@/lib/supabaseServer";
+import { MercadoPagoConfig, Payment } from "mercadopago";
+
+console.log("[WEBHOOK] v2 static-import loaded");
 
 // Helper: obtener pago desde Mercado Pago usando SDK modular v2
-async function fetchPaymentById(id) {
+function fetchPaymentById(id) {
   const MP_ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
   if (!MP_ACCESS_TOKEN) throw new Error("MP_ACCESS_TOKEN faltante");
-  const { MercadoPagoConfig, Payment } = await import("mercadopago");
   const client = new MercadoPagoConfig({ accessToken: MP_ACCESS_TOKEN });
   const paymentClient = new Payment(client);
-  const res = await paymentClient.get({ id });
-  return res;
+  return paymentClient.get({ id });
 }
 
 export async function POST(req) {
@@ -87,3 +88,4 @@ export async function POST(req) {
 export async function GET() {
   return NextResponse.json({ ok: true }, { status: 200 });
 }
+
