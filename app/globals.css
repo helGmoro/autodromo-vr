@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0b0b;
+  --rojo: #e10600;
+  --naranja: #ff6a00;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: #fefefe;
+}
+
+.btn {
+  @apply px-4 py-2 rounded font-semibold transition-all duration-300;
+}
+.btn-rojo {
+  @apply bg-[var(--rojo)] hover:bg-red-700 text-white shadow-lg hover:shadow-red-500/50;
+}
+.btn-naranja {
+  @apply bg-[var(--naranja)] hover:bg-orange-600 text-white shadow-lg hover:shadow-orange-500/50;
+}
+.card {
+  @apply bg-neutral-900 border border-neutral-800 rounded-lg p-4;
+}
