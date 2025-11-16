@@ -2,26 +2,25 @@
 import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { supabaseAdmin } from "@/lib/supabaseServer";
+import { MercadoPagoConfig, Payment } from "mercadopago";
 
-async function getPaymentById(id) {
-  const { MercadoPagoConfig, Payment } = await import("mercadopago");
+console.log("[PAYMENTS_SYNC] v1 static-import loaded");
+
+function getPaymentClient() {
   const token = process.env.MP_ACCESS_TOKEN;
   if (!token) throw new Error("MP_ACCESS_TOKEN faltante");
   const client = new MercadoPagoConfig({ accessToken: token });
-  const payment = new Payment(client);
+  return new Payment(client);
+}
+
+function getPaymentById(id) {
+  const payment = getPaymentClient();
   return payment.get({ id });
 }
 
-async function searchPaymentByExternalReference(external_reference) {
-  const { MercadoPagoConfig, Payment } = await import("mercadopago");
-  const token = process.env.MP_ACCESS_TOKEN;
-  if (!token) throw new Error("MP_ACCESS_TOKEN faltante");
-  const client = new MercadoPagoConfig({ accessToken: token });
-  const payment = new Payment(client);
-  const res = await payment.search({ options: { external_reference } });
-  // Devuelve el más reciente si hay varios
-  if (res?.results?.length) return res.results[0];
-  return null;
+function searchPaymentByExternalReference(external_reference) {
+  const payment = getPaymentClient();
+  return payment.search({ options: { external_reference } });
 }
 
 export async function GET(req) {
@@ -35,7 +34,10 @@ export async function GET(req) {
 
     let mp;
     if (paymentId) mp = await getPaymentById(paymentId);
-    else mp = await searchPaymentByExternalReference(reservationId);
+    else {
+      const searchRes = await searchPaymentByExternalReference(reservationId);
+      if (searchRes?.results?.length) mp = searchRes.results[0];
+    }
 
     if (!mp) return NextResponse.json({ found: false }, { status: 404 });
 
@@ -63,3 +65,5 @@ export async function GET(req) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
+
+
