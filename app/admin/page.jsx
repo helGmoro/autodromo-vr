@@ -6,6 +6,8 @@ import { getSupabase } from "@/lib/supabaseClient";
 import { EXPERIENCIAS } from "@/lib/constants";
 
 function formatARMoney(n) { return new Intl.NumberFormat('es-AR').format(n); }
+const AR_TZ = 'America/Argentina/Buenos_Aires';
+const fmtARDateTime = (d) => new Intl.DateTimeFormat('es-AR', { timeZone: AR_TZ, dateStyle: 'short', timeStyle: 'short' }).format(new Date(d));
 
 export default function AdminPage() {
   const [session, setSession] = useState(null);
@@ -147,7 +149,7 @@ export default function AdminPage() {
     // Preparar CSV (Excel puede abrirlo)
     const headers = ['Fecha y Hora', 'Cliente', 'DNI', 'Email', 'Teléfono', 'Experiencia', 'Cantidad', 'Estado', 'Precio Total', 'Seña Requerida', 'Seña Pagada'];
     const rows = data.map(r => [
-      new Date(r.fecha_hora).toLocaleString('es-AR'),
+      new Intl.DateTimeFormat('es-AR', { timeZone: AR_TZ, dateStyle: 'short', timeStyle: 'short' }).format(new Date(r.fecha_hora)),
       `${r.profiles?.first_name || ''} ${r.profiles?.last_name || ''}`.trim(),
       r.profiles?.dni || '',
       r.profiles?.email || '',
@@ -238,7 +240,7 @@ export default function AdminPage() {
                 <tbody>
                   {reservas.map(r => (
                     <tr key={r.id} className="border-t border-neutral-800 hover:bg-neutral-900/50">
-                      <td className="py-3">{new Date(r.fecha_hora).toLocaleString('es-AR')}</td>
+                      <td className="py-3">{fmtARDateTime(r.fecha_hora)}</td>
                       <td className="py-3">
                         <div className="font-semibold">{r.profiles?.first_name} {r.profiles?.last_name}</div>
                         <div className="text-xs text-neutral-500">DNI: {r.profiles?.dni}</div>
@@ -637,3 +639,5 @@ function PromoRow({ promo, onChanged, onDelete }) {
     </div>
   );
 }
+
+
