@@ -17,6 +17,9 @@ function toLocalInputValue(d) {
   return `${y}-${m}-${day}T${h}:${min}`;
 }
 
+const AR_TZ = 'America/Argentina/Buenos_Aires';
+const fmtARDateTime = (d) => new Intl.DateTimeFormat('es-AR', { timeZone: AR_TZ, dateStyle: 'short', timeStyle: 'short' }).format(new Date(d));
+
 function toDateInputValue(d) {
   const pad = (n) => String(n).padStart(2, "0");
   const y = d.getFullYear();
@@ -419,7 +422,7 @@ export default function ReservasPage() {
                 <div key={r.id} className="bg-neutral-800/50 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
                     <div className="font-semibold">{exp?.nombre} x{r.cantidad}</div>
-                    <div className="text-sm text-neutral-400">{new Date(r.fecha_hora).toLocaleString()}</div>
+                    <div className="text-sm text-neutral-400">{fmtARDateTime(r.fecha_hora)}</div>
                     <div className="text-xs text-yellow-400 mt-1">Expira en {horasRestantes}hs • Seña: ${r.deposito_requerido}</div>
                   </div>
                   <div className="flex gap-2 w-full sm:w-auto flex-col sm:flex-row sm:justify-end">
@@ -598,3 +601,4 @@ export default function ReservasPage() {
     </div>
   );
 }
+
